@@ -1,2 +1,14 @@
-title: "& Overgård blog"
+title: "Kåre Overgård's Blog"
+description: "A blog about Microsoft infrastructure, identity management and automation."
+
 theme: jekyll-theme-minimal
+classes: wide
+
+# Build settings
+permalink: /:year/:title/
+
+# Author settings
+author:
+  name     : "Kåre Overgård"
+
+exclude: ["Gemfile", "Gemfile.lock", "README.md", "LICENSE.txt"]
