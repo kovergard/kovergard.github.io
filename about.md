@@ -1,11 +1,8 @@
 ---
-layout: post
-title: "First test post (title)"
-date: 2025-12-09
-tags: test general
+layout: page
+title: About
+permalink: /about/
 ---
-
-# Lorem Ipsum
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sed lorem eget tellus consequat molestie. Integer quis sem lectus. Maecenas sed nibh nisl. Donec fringilla elementum enim, at tincidunt metus porta nec. Maecenas ornare neque risus, et dictum eros suscipit quis. Fusce vel ligula gravida sapien congue pellentesque vitae eu nisl. Praesent eget enim ac eros suscipit tempus. Integer sagittis commodo quam, ac ullamcorper lorem fermentum at. Fusce molestie felis non eros lobortis, a bibendum arcu luctus. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Fusce vehicula velit ut diam pulvinar, vitae tincidunt ex ornare. Sed dolor sapien, rhoncus ut dictum sit amet, faucibus nec sapien. Donec turpis neque, ullamcorper nec mauris ac, fringilla elementum enim. Quisque dolor erat, convallis vitae cursus vel, fermentum sit amet sapien. Etiam vitae viverra metus. Aenean sed accumsan risus.
 

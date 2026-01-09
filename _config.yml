@@ -1,14 +1,30 @@
-title: "Kåre Overgård's Blog"
-description: "A blog about Microsoft infrastructure, identity management and automation."
+# Metadata
+title: "& blog"
+description: "A blog about Microsoft infrastructure, identity management & automation."
+author:
+  name: Kåre Overgård
+  email: k@overgard.dk
 
-theme: jekyll-theme-minimal
-classes: wide
+# Needed plugins
+plugins:
+  - jekyll-remote-theme
+  - jekyll-feed
+  - jekyll-seo-tag
+
+# Theme settings
+remote_theme: "jekyll/minima@bf9ef98"  # Locked to a specific commit for stability
+minima:
+  skin: auto
+  nav_pages:
+    - about.md
+  social_links:
+    - title: My GitHub profile
+      icon: github
+      url: "https://github.com/kovergard"
+  date_format: "%Y-%m-%d"
+  show_excerpts: false
 
 # Build settings
 permalink: /:year/:title/
-
-# Author settings
-author:
-  name     : "Kåre Overgård"
-
 exclude: ["Gemfile", "Gemfile.lock", "README.md", "LICENSE.txt"]
+
