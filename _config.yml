@@ -1,6 +1,6 @@
 # Metadata
 title: "& blog"
-description: "A blog about Microsoft infrastructure, identity management & automation."
+description: "A blog about Microsoft security, identity management & automation."
 author:
   name: Kåre Overgård
   email: k@overgard.dk
@@ -18,9 +18,15 @@ minima:
   nav_pages:
     - about.md
   social_links:
-    - title: My GitHub profile
+    - title: GitHub profile
       icon: github
       url: "https://github.com/kovergard"
+    - title: LinkedIn profile
+      icon: linkedin
+      url: "https://www.linkedin.com/in/kaareovergaard"
+    - title: Portfolio site (Danish)
+      icon: wordpress
+      url: "https://overgard.dk"
   date_format: "%Y-%m-%d"
   show_excerpts: false
 
