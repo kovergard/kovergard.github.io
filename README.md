@@ -1,3 +1,5 @@
-# Welcome to the blog
+# blog.overgard.dk
 
-This is content from README.md
+This repository contains the content for the site https://blog.overgard.dk
+
+The site is hosted on GitHub Pages using the Minima theme
