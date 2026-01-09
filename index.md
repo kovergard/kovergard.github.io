@@ -1,18 +1,17 @@
 ---
-title: "Welcome to the blog"
-layout: default
+layout: base
 ---
 
-# This is index.md
-
-And some content from index
-
-## List of blog posts
-
-<ul>
-  {% for post in site.posts %}
-    <li>
-      <a href="{{ post.url }}">{{ post.title }}</a>
-    </li>
-  {% endfor %}
+<ul class="post-list">
+{% for post in site.posts %}
+<li>
+  <h3><a class="post-link" href="{{ post.url }}">{{ post.title }}</a></h3>
+  <span class="post-meta">{{ post.date | date: "%Y-%m-%d" }}
+  {% if post.tags %}
+    <br><span class="meta-label"><small><em>{{ post.tags | join: "</em> - <em>" }}</em></small></span>
+  {% endif %}
+  </span>
+  <p>{{ post.content | strip_html | truncatewords: 50 }}</p>
+</li>
+{% endfor %}
 </ul>
