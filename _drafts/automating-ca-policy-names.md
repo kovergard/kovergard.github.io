@@ -1,195 +1,82 @@
 ---
-layout: post
+layout: post-image
 title: "It's 10 p.m. Do you know what your Conditional Access policies are doing?"
 date: 2026-01-09
 tags: conditional-access automation powershell
+image: /assets/images/pexels-mikhail-nilov-6963062.jpg
+image_alt: people-night-smartphone-dark-693062
+image_caption: Photo by Mikhail Nilov
 ---
 
-Conditional Access policies can be pretty complicated to set up and maintain, and they are critical for securing access to your tenant.
+Conditional Access (CA) policies are critical for securing access to everthing in your tenant. But keeping track of what they are actually doing can be complicated. 
 
-As the number of policies grow due to complex organizational demands, it would be great if we could add a description to the policies, documenting their purpose. 
+One challange I often encounter when working on customer projects, is that few (if any) of the tenant administrators know what all their Conditional Access policies are actually doing, and why they are doing it. This can lead to both security issues due to lacking coverage from policies, as well as bad user experince when trying to access company data.
 
-Alas, we are limited to whatever information we can cram into the name of the policy, and there are a lot of different approaches to naming.
+## The problem
+
+The lack of insight into the Conditional Access policies usually stems from one or more of the following issues:
+
+* The number of policies grow over time making it hard to keep an complete overview. Microsoft recommends keeping the total number of CA policies down, but that is not always possible due to organizational demands and the need to address specific cases. 
+* Environments are managed by multiple administrators, who each have their own opinion on how policies should be configured. 
+* Policies with an obscure name, created by administrators who have since left the company, or perhaps external consultants. 
+
+The impact of these issues might be lessened, if we could add a description to CA policies. That would allow us a more detailed way to document the intent of the policy, hopefully leading to a better policy set. Unfortunately, there is no description field on CA policies. 😒
+
+While there are excellent tools out there for documenting the content of Conditional Access policies, like the excellent [IdPowerApp CA Documenter](https://idpowertoys.merill.net/ca) by Merill Fernando, I wanted something that would make it apparant what a CA policy does, directly in the Entra ID admin portal.
+
+Without a description field, the only option availble in the portal is to ensure that the display name of the policy actually reflects the content. This means adopting a naming standard that describes policy intent.
 
 ## Common naming standards
 
-The following are some of the most common naming standards that I have encountered. You might be using one of these already, or have invented your own. 
+The following are some of the most common naming standards that I have encountered. You probably already have policies that are named after one or these standards, or a variation of them.
 
-**Microsoft-managed policies**
+**Microsoft-managed policies and templates**
 
-Microsoft-managed policies, and policies based on templates provided in the Conditional Access management portal, use sentence-like names like:
+Microsoft-managed policies and policies based on templates provided in the Conditional Access management portal, use sentence-based names that looks like these:
 
-```text
-Block legacy authentication
-Securing security info registration
-Require compliant or hybrid Azure AD joined device or multifactor authentication for all users
-```
+
+* Block legacy authentication
+* Securing security info registration
+* Require compliant or hybrid Azure AD joined device or multifactor authentication for all users
+
+While this is a good start, it can get a bit complicated when targetting specific locations, applications or similar. 
+
 **Suggested naming standard from Learn**
 
-[Guidance](https://learn.microsoft.com/en-us/entra/identity/conditional-access/plan-conditional-access#set-naming-standards-for-your-policies) from the Microsoft Learn site suggest using a standard prefixed with a serial number on this format:
+Guidance from the [Microsoft Learn]((https://learn.microsoft.com/en-us/entra/identity/conditional-access/plan-conditional-access#set-naming-standards-for-your-policies)) site suggest using a standard prefixed with a serial number on format `<SN> - <Cloud app>: <Response> For <Principal> When <Conditions>`.
 
-```text
-<SN> - <Cloud app>: <Response> For <Principal> When <Conditions>
-```
-which will give you names like this:
-```
-CA01 - Dynamics CRP: Require MFA For Marketing When On external networks
-```
+* CA01 - Dynamics CRP: Require MFA for Marketing when on external Networks
+* CA02 - Office 365: Require Terms of Use for Guests when using browser
+* CA03 - All apps: Block legacy authentication
+
+The serial numbers makes it easier to identity specific policies during troubleshooting, and the structured names should make it easier to comprehend the purpose of each policy.
 
 **Conditional Access Guidance for Zero Trust**
 
-For a while, Microsoft Learn linked to a GitHub repository with guidance for using Conditional Access in the Zero Trust framework, and that content is still available [here](https://github.com/microsoft/ConditionalAccessforZeroTrustResources).
+Prior to the current guidance on Microsoft Learn, the site linked to a GitHub repository with guidance for configuring Conditional Access for Zero Trust. That content is still available [here](https://github.com/microsoft/ConditionalAccessforZeroTrustResources).
 
-This framework suggests compact names with serial numbers and personas (See Component reference below), and contain the functionality of the policy:
+This framework suggests names with serial numbers and introduces personas. Personas 
+TODO
 
-```text
-CA100-Admins-BaseProtection-AllApps-AnyPlatform-CompliantandMFA
-CA206-Internals-DataandAppProtection-AllApps-iOSorAndroid-ClientAppORAPP
-CA403-Guests-IdentityProtection-AllApps-AnyPlatform-BlockLegacyAuth
-```
+* CA100-Admins-BaseProtection-AllApps-AnyPlatform-CompliantandMFA
+* CA206-Internals-DataandAppProtection-AllApps-iOSorAndroid-ClientAppORAPP
+* CA403-Guests-IdentityProtection-AllApps-AnyPlatform-BlockLegacyAuth
 
 This original repository work has not been updated since October 2023. Fortunately, others like MVP Joey Verlinden with his [Conditional Access Baseline](https://github.com/j0eyv/ConditionalAccessBaseline) project, have created updated policies using the similar naming.
 
+TODO
+
 ## A different approach – automating descriptive names
 
-Whatever "manual" standard used for naming your Conditional Access policies, you can still encounter issues like these:
-* When working in an environment with multiple administrators, naming standards might be unintentionally ignored. 
-* Some policies might have been created by admins that have left the company, and might have a misleading name.
-* The content and purpose of a policy might shift over time, so the name might not reflect the content anymore.
+Adopting a naming standard for naming your Conditional Access policies is a great start. But there are a few issues:
 
-To address these and similar issues, I wrote `Get-ConditionalAccessPolicyNameSuggestion.ps1`
+* The content and purpose of a policy might shift over time, so the name might not reflect the actual configuration.
+* Your co-administrators might not be aware, or not understand, the naming policy.
 
-This script can be used to generate consistent names for Conditional Access policies, based on the content of the policy. Examples of usage and output can be found below.
+To address these and similar issues, I wrote the script `Get-ConditionalAccessPolicyNameSuggestion.ps1`
 
-**Please note:** The script is NOT meant to be for documentation purposes or security auditing. If you are looking for something to help out with those areas, I recommend the following free resources instead:
+This script can be used to generate descriptive names for Conditional Access policies, based on the content of the policy. 
 
-* [IdPowerApp CA Documenter](https://idpowertoys.merill.net/ca) - Generates visually awesome documentation of the content of each policy
-* [Maester](https://github.com/maester365/maester) - Can check the content of your policies against different security frameworks.
+TODO Personas
 
-## How to use the script
-
-The script only provides suggestions to CA policy names, and it does not write anything back to Entra ID. This means that only read access via Graph is needed for normal execution.
-
-**Requirements:**
-
-The following must be in place before executing the script.
-- PowerShell 7.4.0 or later
-- Microsoft.Graph.Authentication module
-- An active Microsoft Graph connection with scopes: `Policy.Read.All`, `Application.Read.All`, `Group.Read.All`
-
-**Parameters:**
-
-The script can be run without any parameters, which will produce names based on a standard pattern. But you can modify the content in the name by using the parameters. See examples below for different modifications.
-
-| Parameter               | Type   | Default                                                                                  | Description                        |
-| ----------------------- | ------ | ---------------------------------------------------------------------------------------- | ---------------------------------- |
-| `NamePattern`           | string | `'{SerialNumber} - {Persona} - {TargetResource} - {Network} - {Condition} - {Response}'` | Pattern for suggested policy names |
-| `SerialNumberPrefix`    | string | `'CA'`                                                                                   | Prefix for new serial numbers      |
-| `AllPartsDelimiter`     | string | `' and '`                                                                                | Delimiter for AND logic            |
-| `AnyPartsDelimiter`     | string | `' or '`                                                                                 | Delimiter for OR logic             |
-| `ExcludePartsDelimiter` | string | `' except '`                                                                             | Delimiter for exclusions           |
-| `KeepSerialNumbers`     | switch | `$false`                                                                                 | Preserve existing serial numbers   |
-| `Condense`              | switch | `$false`                                                                                 | Convert parts to PascalCase        |
-
-**Examples:**
-
-```powershell
-# Connect to MS Graph 
-Connect-MgGraph -Scopes Policy.Read.All,Application.Read.All,Group.Read.All
-
-# Run with default options.
-.\Get-ConditionalAccessPolicyNameSuggestion.ps1
-```
-![image](./images/NameSuggestion-Default.png)
-
-The default name pattern uses serial numbers and personas from the Conditional Access Guidance for Zero Trust framework.
-
-Notice that the serial number is kept for `CA0315: Require TOU for consultants accessing SharePoint` since it matches the right persona group and format. However, the `CA11 - Allow login without MFA from Factories` policy is assigned a new serial number, since it is not the right length.
-
-```powershell
-# Condense components and keep existing serial numbers
-.\Get-ConditionalAccessPolicyNameSuggestion.ps1 -Condense -KeepSerialNumbers
-```
-
-![image](./images/NameSuggestion-Condense-KeepSerial.png)
-
-The `-Condense` switch removes all spacing and special characters inside each component, and converts the component to PascalCase string like `RequireMfaOrCompliantDeviceOrHybridJoinedDevice`.
-
-Note that `CA11 - Allow login without MFA from Factories` keeps its serial number, even if it doesn't match the right format. This is because of the `-KeepSerialNumbers` switch.
-
-```powershell
-# Compact name pattern
-.\Get-ConditionalAccessPolicyNameSuggestion.ps1 -NamePattern '{SerialNumber}-{Persona}-{TargetResource}-{Network}-{Condition}-{Response}' -Condense
-```
-![image](./images/NameSuggestion-CustomCondensed.png)
-
-The combination of the `-NamePattern` parameter and the `-Condense` switch makes for a single long string without any spaces or special characters apart from the dash separating the components. 
-
-```powershell
-# Another custom name pattern
-.\Get-ConditionalAccessPolicyNameSuggestion.ps1 -NamePattern '{SerialNumber} - {TargetResource}: {Response} For {Persona} On {Network} When {Condition}'
-```
-
-![image](./images/NameSuggestion-CustomMicrosoft.png)
-
-The use `-NamePattern` here makes for names that are akin to what is currently recommended on [Microsoft Learn](https://learn.microsoft.com/en-us/entra/identity/conditional-access/plan-conditional-access#set-naming-standards-for-your-policies).
-
-## Pattern components
-
-The following components can be used in the name pattern.
-
-**SerialNumber**
-
-A recommended unique identifier for the policy. This makes it easier to identify specific policies during implementation and troubleshooting, instead of matching a long a complex name. 
-
-By default, serial numbers are generated using `CA{PersonaSerialNumber}{Counter}`, so the first policy in the Admin persona would have the serial number CA0101.
-
-The "CA" prefix can be adjusted using the `-SerialNumberPrefix` parameter.
-
-**Persona**
-
-The persona component uses definitions taken from the [Conditional Access Guidance for Zero Trust](https://github.com/microsoft/ConditionalAccessforZeroTrustResources) repository. Further explanation of the persona concept can be found there.
-
-| Persona                     | Serial | Entra ID Group Name                    | Backup Match      | Description                                                                                   |
-| --------------------------- | ------ | -------------------------------------- | ----------------- | --------------------------------------------------------------------------------------------- |
-| Global                      | 00     | CA-Persona-Global                      | All users         | Global is used for policies that should apply across all personas, unless explicitly excluded |
-| Admins                      | 01     | CA-Persona-Admins                      | All roles         | All non-guest accounts that have privileged access                                            |
-| Internals                   | 02     | CA-Persona-Internals                   |                   | Internal non-admin employee accounts, except developers                                       |
-| Externals                   | 03     | CA-Persona-Externals                   |                   | External users with an internal non-admin account, like consultants and similar               |
-| Guests                      | 04     | CA-Persona-Guests                      | All guests        | All non-admin guest accounts                                                                  |
-| GuestAdmins                 | 05     | CA-Persona-GuestAdmins                 |                   | All admin guest accounts                                                                      |
-| Microsoft365ServiceAccounts | 06     | CA-Persona-Microsoft365ServiceAccounts |                   | Cloud-native user-based service accounts used to access Microsoft 365 services                |
-| AzureServiceAccounts        | 07     | CA-Persona-AzureServiceAccounts        |                   | Cloud-native user-based service accounts used to access  Microsoft Azure (IaaS/PaaS) services |
-| CorpServiceAccounts         | 08     | CA-Persona-CorpServiceAccounts         |                   | Service account synchronized from on-premises AD used to access Azure/M365. Should be avoided |
-| WorkloadIdentities          | 09     | CA-Persona-WorkloadIdentities          |                   | Entra ID service principals and managed identities                                            |
-| Developers                  | 10     | CA-Persona-Developers                  |                   | Internal or external developers                                                               |
-| Agents                      | 11     | CA-Persona-Agents                      | All agents        | AI Agents                                                                                     |
-
-If possible, the script matches a policy to a persona using an Entra ID group with a name matching `CA-Persona-{PersonaName}`. If such a group is not found, the policy will be assigned to a persona based on the criteria in the Backup Match column.
-
-In case you want to use other groups, you will have to edit the `$CA_PERSONA` variable directly in the script.
-
-**TargetResource**
-
-Applications or user actions
-
-**Network**
-
-Named locations or network type
-
-**Condition**
-
-Risk levels, platforms, client apps
-
-**Response**
-
-Block or require controls
-
-### Ideas for future improvements
-
-* Add an option to use actual group names in policy names instead of personas.
-* afadsf
-* asddasd
-
----
 
